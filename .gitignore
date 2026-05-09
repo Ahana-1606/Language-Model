@@ -1,0 +1,39 @@
+# Generated audio files
+output/*.mp3
+output/*.wav
+output/*.flac
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv*/
+venv/
+env/
+.venv311/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+temp_*.txt
+
+# Model files (can be large)
+models/*.pth
+models/*.onnx
+
+# Logs
+*.log
+logs/
