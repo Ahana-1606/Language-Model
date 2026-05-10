@@ -1,48 +1,51 @@
 # Bengali Text-to-Speech (TTS) Model
 
-This project is for building a Bengali text-to-speech system using AI tools.
-
-Text-to-speech means:
+This project converts Bengali text into Bengali speech using Bengali neural TTS
+voices.
 
 ```text
-Bengali text -> TTS engine/model -> Bengali audio
+Bengali text -> Bengali neural TTS voice -> MP3 audio
 ```
 
 ## Project Structure
 
 ```text
 Language Model/
-  data/
-    bengali/              # Bengali audio files and transcriptions
-  models/                 # Saved trained models or model outputs
-  output/                 # Generated Bengali speech files
+  data/bengali/          # Bengali audio files and transcriptions
+  models/                # Dataset report and model/cache files
+  output/                # Generated Bengali speech files
   src/
-    01_quick_test.py      # Run this first
+    01_quick_test.py     # Quick Bengali neural TTS test
     02_data_preparation.py
-    03_finetune_model.py
-    04_inference.py
-  requirements_phase1.txt # Beginner dependencies
-  requirements.txt        # Later fine-tuning dependencies
+    03_finetune_model.py # Dataset readiness report
+    04_inference.py      # Main Bengali TTS inference script
 ```
 
-## Beginner Path
-
-1. Run a quick Bengali TTS test.
-2. Collect Bengali audio and matching Bengali text.
-3. Prepare `metadata.csv`.
-4. Fine-tune a model later when you have enough data.
-5. Generate Bengali speech from your own text.
-
-## First Commands
+## Install
 
 ```powershell
-pip install -r requirements_phase1.txt
-python src\01_quick_test.py
+.\.venv311\Scripts\python.exe -m pip install -r requirements_phase1.txt
 ```
 
-Check the `output/` folder for Bengali audio files.
+## Generate Bengali Speech
 
-## Training Data Format
+```powershell
+.\.venv311\Scripts\python.exe src\04_inference.py --text "আমি বাংলা ভালোবাসি।" --output output\submission_bengali.mp3
+```
+
+Male voice:
+
+```powershell
+.\.venv311\Scripts\python.exe src\04_inference.py --voice male_bd --text "আমি বাংলা ভালোবাসি।" --output output\male_voice.mp3
+```
+
+List voices:
+
+```powershell
+.\.venv311\Scripts\python.exe src\04_inference.py --list-voices
+```
+
+## Dataset
 
 Use one short sentence per audio file:
 
@@ -52,3 +55,15 @@ data/bengali/audio_001.txt
 ```
 
 The `.txt` file must contain the exact Bengali sentence spoken in the `.wav`.
+
+Prepare metadata:
+
+```powershell
+.\.venv311\Scripts\python.exe src\02_data_preparation.py
+```
+
+Create the dataset report:
+
+```powershell
+.\.venv311\Scripts\python.exe src\03_finetune_model.py
+```

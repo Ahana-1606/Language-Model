@@ -30,9 +30,11 @@ Thumbs.db
 *.temp
 temp_*.txt
 
-# Model files (can be large)
-models/*.pth
-models/*.onnx
+# Model files and caches (can be very large)
+models/cache/
+models/coqui/
+models/**/*.pth
+models/**/*.onnx
 
 # Logs
 *.log

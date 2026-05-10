@@ -1,0 +1,7 @@
+# Beginner / Phase 1 dependencies.
+# These are enough to run the first Bengali text-to-speech test with gTTS
+# and the local Windows speech engine.
+
+gTTS
+pyttsx3
+edge-tts

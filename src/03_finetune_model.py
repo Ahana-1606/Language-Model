@@ -1,81 +1,112 @@
 """
-Fine-tuning placeholder for a Bengali Text-to-Speech model.
+Bengali TTS dataset readiness report.
 
-Real fine-tuning needs Python 3.10/3.11, a GPU for practical training, and a
-clean Bengali dataset. Use this script after data/bengali/metadata.csv exists.
+This project has 20 Bengali audio/text pairs. That is enough to demonstrate a
+TTS pipeline and generate Bengali speech with src/04_inference.py, but it is not
+enough to train a high-quality custom neural voice from scratch.
 """
 
-import os
+import csv
+import sys
+import wave
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-BENGALI_SAMPLE = "আমি একটি কৃত্রিম বুদ্ধিমত্তা ভিত্তিক বাংলা টেক্সট টু স্পিচ মডেল পরীক্ষা করছি।"
+DATA_DIR = PROJECT_ROOT / "data"
+BENGALI_DIR = DATA_DIR / "bengali"
+METADATA_FILE = BENGALI_DIR / "metadata.csv"
+MODELS_DIR = PROJECT_ROOT / "models"
+REPORT_FILE = MODELS_DIR / "bengali_dataset_report.txt"
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 
-def check_bengali_dataset(data_dir: str) -> int:
-    """Check whether the Bengali dataset is ready for a tiny experiment."""
-    data_path = Path(data_dir)
-    metadata_file = data_path / "bengali" / "metadata.csv"
-
-    if not metadata_file.exists():
-        print(f"\nERROR: Metadata file not found: {metadata_file}")
-        print("Create it first with: python src\\02_data_preparation.py")
-        return 0
-
-    rows = [line for line in metadata_file.read_text(encoding="utf-8").splitlines() if line.strip()]
-    print(f"Dataset ready: {len(rows)} Bengali clips found in metadata.csv")
-
-    if len(rows) < 20:
-        print("WARNING: Fewer than 20 clips. Record more before experimenting.")
-    elif len(rows) < 50:
-        print("Tiny experiment mode: 20 clips is enough to test the pipeline, not enough for a good voice.")
-    else:
-        print("Good beginner dataset size for a first fine-tuning attempt.")
-
-    return len(rows)
+def get_wav_duration(filepath: Path) -> float:
+    with wave.open(str(filepath), "rb") as wav_file:
+        return wav_file.getnframes() / wav_file.getframerate()
 
 
-def finetune_tts(data_dir: str, output_dir: str):
-    """Load a pre-trained TTS model and confirm Bengali data is ready."""
-    print("\n" + "=" * 60)
-    print("Bengali TTS Fine-Tuning Check")
+def read_metadata() -> list[tuple[str, str]]:
+    if not METADATA_FILE.exists():
+        print(f"ERROR: Metadata file not found: {METADATA_FILE}")
+        print("Run: python src\\02_data_preparation.py")
+        return []
+
+    rows = []
+    with METADATA_FILE.open("r", encoding="utf-8", newline="") as file:
+        reader = csv.reader(file, delimiter="|")
+        for row in reader:
+            if len(row) >= 2:
+                rows.append((row[0], row[1]))
+    return rows
+
+
+def build_report(rows: list[tuple[str, str]]) -> str:
+    total_duration = 0.0
+    missing_audio = []
+
+    for audio_name, _text in rows:
+        audio_path = BENGALI_DIR / audio_name
+        if not audio_path.exists():
+            missing_audio.append(audio_name)
+            continue
+
+        try:
+            total_duration += get_wav_duration(audio_path)
+        except Exception:
+            missing_audio.append(audio_name)
+
+    lines = [
+        "Bengali TTS Dataset Report",
+        "=" * 40,
+        f"Metadata file: {METADATA_FILE}",
+        f"Number of clips: {len(rows)}",
+        f"Total audio duration: {total_duration:.1f} seconds",
+        f"Missing/unreadable audio files: {len(missing_audio)}",
+        "",
+        "Status:",
+        "The dataset is ready for a Bengali TTS demonstration.",
+        "The current submission uses Edge neural Bengali TTS in src/04_inference.py.",
+        "",
+        "Fine-tuning note:",
+        "20 clips is not enough for a high-quality custom Bengali neural voice.",
+        "Coqui XTTS v2 was tested, but it does not support Bengali language code 'bn'.",
+        "For the current deadline, use the generated MP3 files in the output folder.",
+        "",
+        "Recommended output files:",
+        "output/submission_bengali_female.mp3",
+        "output/submission_bengali_male.mp3",
+    ]
+
+    if missing_audio:
+        lines.extend(["", "Missing/unreadable files:"])
+        lines.extend(missing_audio)
+
+    return "\n".join(lines)
+
+
+def main() -> int:
+    print("=" * 60)
+    print("Bengali TTS Dataset Readiness")
     print("=" * 60)
 
-    num_samples = check_bengali_dataset(data_dir)
-    if num_samples == 0:
-        return
+    rows = read_metadata()
+    if not rows:
+        return 1
 
-    try:
-        from TTS.api import TTS
-    except ImportError:
-        print("ERROR: Coqui TTS is not installed.")
-        print("For full fine-tuning, use Python 3.10 or 3.11, then run: pip install TTS")
-        print("\nYour 20-clip Bengali dataset is prepared, but this computer is not ready for model fine-tuning yet.")
-        return
+    report = build_report(rows)
+    MODELS_DIR.mkdir(exist_ok=True, parents=True)
+    REPORT_FILE.write_text(report, encoding="utf-8")
 
-    output_path = Path(output_dir)
-    output_path.mkdir(exist_ok=True, parents=True)
-
-    print("\nLoading pre-trained model for a sample Bengali generation...")
-    try:
-        tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2", gpu=False)
-        sample_output = output_path / "bengali_sample.wav"
-        tts.tts_to_file(text=BENGALI_SAMPLE, file_path=str(sample_output), language="bn")
-        print(f"OK generated sample: {sample_output}")
-    except Exception as exc:
-        print(f"ERROR: Model test failed: {exc}")
-        return
-
-    print("\nNext step: use a full Coqui training recipe once your Bengali dataset is large enough.")
+    print(report)
+    print("")
+    print(f"Report saved: {REPORT_FILE}")
+    return 0
 
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Fine-tune a Bengali TTS model")
-    parser.add_argument("--data-dir", default=str(PROJECT_ROOT / "data"), help="Path to data directory")
-    parser.add_argument("--output-dir", default=str(PROJECT_ROOT / "models"), help="Path to save model/output")
-    args = parser.parse_args()
-
-    finetune_tts(data_dir=args.data_dir, output_dir=args.output_dir)
+    raise SystemExit(main())

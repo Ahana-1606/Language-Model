@@ -1,0 +1,19 @@
+Bengali TTS Dataset Report
+========================================
+Metadata file: C:\Users\KIIT\Desktop\Language Model\data\bengali\metadata.csv
+Number of clips: 20
+Total audio duration: 77.9 seconds
+Missing/unreadable audio files: 0
+
+Status:
+The dataset is ready for a Bengali TTS demonstration.
+The current submission uses Edge neural Bengali TTS in src/04_inference.py.
+
+Fine-tuning note:
+20 clips is not enough for a high-quality custom Bengali neural voice.
+Coqui XTTS v2 was tested, but it does not support Bengali language code 'bn'.
+For the current deadline, use the generated MP3 files in the output folder.
+
+Recommended output files:
+output/submission_bengali_female.mp3
+output/submission_bengali_male.mp3
