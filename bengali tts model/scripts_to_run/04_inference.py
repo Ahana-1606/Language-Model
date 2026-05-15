@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = PROJECT_ROOT / "output"
+OUTPUT_DIR = PROJECT_ROOT / "voice_outputs"
 DEFAULT_EDGE_VOICE = "bn-BD-NabanitaNeural"
 EDGE_BENGALI_VOICES = {
     "female_bd": "bn-BD-NabanitaNeural",
@@ -157,11 +157,11 @@ def main() -> int:
         return 0 if tts.generate(args.text, args.output) else 1
 
     print("\nBengali TTS examples:")
-    print("  python src\\04_inference.py --list-voices")
-    print("  python src\\04_inference.py --text \"আমি বাংলা ভালোবাসি।\" --output output\\submission_bengali.mp3")
+    print("  python scripts_to_run\\04_inference.py --list-voices")
+    print("  python scripts_to_run\\04_inference.py --text \"আমি বাংলা ভালোবাসি।\" --output voice_outputs\\submission_bengali.mp3")
     print(
-        "  python src\\04_inference.py --voice male_bd "
-        "--text \"আমি বাংলা ভালোবাসি।\" --output output\\male_voice.mp3"
+        "  python scripts_to_run\\04_inference.py --voice male_bd "
+        "--text \"আমি বাংলা ভালোবাসি।\" --output voice_outputs\\male_voice.mp3"
     )
     return 0
 

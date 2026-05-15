@@ -1,7 +1,10 @@
 # Generated audio files
-output/*.mp3
-output/*.wav
-output/*.flac
+voice_outputs/*.mp3
+voice_outputs/*.wav
+voice_outputs/*.flac
+**/voice_outputs/*.mp3
+**/voice_outputs/*.wav
+**/voice_outputs/*.flac
 
 # Python cache
 __pycache__/
@@ -14,6 +17,7 @@ __pycache__/
 venv/
 env/
 .venv311/
+**/.venv*/
 
 # IDE files
 .vscode/
@@ -30,11 +34,45 @@ Thumbs.db
 *.temp
 temp_*.txt
 
+# Text and Markdown files
+*.txt
+*.md
+**/*.txt
+**/*.md
+
 # Model files and caches (can be very large)
-models/cache/
-models/coqui/
-models/**/*.pth
-models/**/*.onnx
+model_files/cache/
+model_files/coqui/
+model_files/**/*.pth
+model_files/**/*.onnx
+**/model_files/cache/
+**/model_files/coqui/
+**/model_files/**/*.pth
+**/model_files/**/*.onnx
+
+# Images and PDFs
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.webp
+*.svg
+*.ico
+*.pdf
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.bmp
+**/*.tiff
+**/*.tif
+**/*.webp
+**/*.svg
+**/*.ico
+**/*.pdf
 
 # Logs
 *.log

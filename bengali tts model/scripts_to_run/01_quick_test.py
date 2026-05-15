@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = PROJECT_ROOT / "output"
+OUTPUT_DIR = PROJECT_ROOT / "voice_outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 BENGALI_SAMPLE = "নমস্কার, আমি একটি বাংলা টেক্সট টু স্পিচ মডেল পরীক্ষা করছি।"

@@ -2,7 +2,7 @@
 Bengali TTS dataset readiness report.
 
 This project has 20 Bengali audio/text pairs. That is enough to demonstrate a
-TTS pipeline and generate Bengali speech with src/04_inference.py, but it is not
+TTS pipeline and generate Bengali speech with scripts_to_run/04_inference.py, but it is not
 enough to train a high-quality custom neural voice from scratch.
 """
 
@@ -16,8 +16,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 BENGALI_DIR = DATA_DIR / "bengali"
 METADATA_FILE = BENGALI_DIR / "metadata.csv"
-MODELS_DIR = PROJECT_ROOT / "models"
-REPORT_FILE = MODELS_DIR / "bengali_dataset_report.txt"
+MODELS_DIR = PROJECT_ROOT / "model_files"
+REPORT_FILE = PROJECT_ROOT / "text_and_markdown_files" / "bengali_dataset_report.txt"
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -33,7 +33,7 @@ def get_wav_duration(filepath: Path) -> float:
 def read_metadata() -> list[tuple[str, str]]:
     if not METADATA_FILE.exists():
         print(f"ERROR: Metadata file not found: {METADATA_FILE}")
-        print("Run: python src\\02_data_preparation.py")
+        print("Run: python scripts_to_run\\02_data_preparation.py")
         return []
 
     rows = []
@@ -70,16 +70,16 @@ def build_report(rows: list[tuple[str, str]]) -> str:
         "",
         "Status:",
         "The dataset is ready for a Bengali TTS demonstration.",
-        "The current submission uses Edge neural Bengali TTS in src/04_inference.py.",
+        "The current submission uses Edge neural Bengali TTS in scripts_to_run/04_inference.py.",
         "",
         "Fine-tuning note:",
         "20 clips is not enough for a high-quality custom Bengali neural voice.",
         "Coqui XTTS v2 was tested, but it does not support Bengali language code 'bn'.",
-        "For the current deadline, use the generated MP3 files in the output folder.",
+        "For the current deadline, use the generated MP3 files in the voice_outputs folder.",
         "",
         "Recommended output files:",
-        "output/submission_bengali_female.mp3",
-        "output/submission_bengali_male.mp3",
+        "voice_outputs/submission_bengali_female.mp3",
+        "voice_outputs/submission_bengali_male.mp3",
     ]
 
     if missing_audio:
@@ -100,6 +100,7 @@ def main() -> int:
 
     report = build_report(rows)
     MODELS_DIR.mkdir(exist_ok=True, parents=True)
+    REPORT_FILE.parent.mkdir(exist_ok=True, parents=True)
     REPORT_FILE.write_text(report, encoding="utf-8")
 
     print(report)
